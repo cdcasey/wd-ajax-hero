@@ -1,9 +1,9 @@
-(function() {
+(function () {
   'use strict';
 
   const movies = [];
 
-  const renderMovies = function() {
+  const renderMovies = function () {
     $('#listings').empty();
 
     for (const movie of movies) {
@@ -57,4 +57,41 @@
   };
 
   // ADD YOUR CODE HERE
+  let searchField = document.getElementById('search');
+  let searchButton = document.getElementsByTagName('button')[0];
+  searchButton.addEventListener('click', (event) => {
+    event.preventDefault();
+    if (searchField.value === '') {
+      searchField.setAttribute('style', 'border: 2px solid red;');
+      return;
+    } else {
+      searchField.removeAttribute('style');
+    }
+
+    fetch(`https://omdb-api.now.sh/?s=${searchField.value}`)
+      .then((response) => {
+        return response.json()
+      })
+      .then((data) => {
+        data.Search.forEach(movie => {
+          fetch(`https://omdb-api.now.sh/?i=${movie.imdbID}`)
+            .then((response) => {
+              return response.json();
+            })
+            .then((data) => {
+              let properMovie = {
+                id: data.imdbID,
+                poster: data.Poster,
+                title: data.Title,
+                year: data.Year,
+                plot: data.Plot,
+              }
+              movies.push(properMovie);
+            }).then(() => {renderMovies();})
+        });
+      })
+
+    searchField.value = '';
+  })
+
 })();
