@@ -74,23 +74,28 @@
       })
       .then((data) => {
         data.Search.forEach(movie => {
-          fetch(`https://omdb-api.now.sh/?i=${movie.imdbID}`)
+          let properMovie = {
+            id: movie.imdbID,
+            poster: movie.Poster,
+            title: movie.Title,
+            year: movie.Year,
+          }
+          movies.push(properMovie);
+        });
+      })
+      .then(() => {
+        movies.forEach(movie => {
+          fetch(`https://omdb-api.now.sh/?i=${movie.id}`)
             .then((response) => {
               return response.json();
             })
             .then((data) => {
-              let properMovie = {
-                id: data.imdbID,
-                poster: data.Poster,
-                title: data.Title,
-                year: data.Year,
-                plot: data.Plot,
-              }
-              movies.push(properMovie);
-            }).then(() => {renderMovies();})
+              movie.plot = data.Plot;
+            }).then(() => {
+              renderMovies();
+            })
         });
       })
-
     searchField.value = '';
   })
 
