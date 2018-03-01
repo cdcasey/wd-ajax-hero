@@ -53,6 +53,13 @@
       $('#listings').append($col);
 
       $('.modal-trigger').leanModal();
+
+      $plot.click(function () {
+        $.get(`https://omdb-api.now.sh/?i=${movie.id}`)
+          .done((data) => {
+            $modalText.append(data.Plot);
+          })
+      })
     }
   };
 
@@ -84,17 +91,7 @@
         });
       })
       .then(() => {
-        movies.forEach(movie => {
-          fetch(`https://omdb-api.now.sh/?i=${movie.id}`)
-            .then((response) => {
-              return response.json();
-            })
-            .then((data) => {
-              movie.plot = data.Plot;
-            }).then(() => {
-              renderMovies();
-            })
-        });
+        renderMovies();
       })
     searchField.value = '';
   })
